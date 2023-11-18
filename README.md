@@ -31,14 +31,20 @@ artistic
 pos: ```van gogh, {prompt}, abstract artstyle, {prompt}, landscape```  
 neg: ```blurry, ugly```
 </details>
-<br>
 
+### Basic use
 `oil painting, $cinematic, man standing in rain`  
-result:  
+->  
 `oil painting, cinematic perspective, letterboxing, man standing in rain`
 
-pos: `$1artistic, man, $3(artistic)`  
-neg: `$cinematic`  
-result:  
-pos: `van gogh, man, landscape`  
-neg: `colorful, cute`
+### {prompt} parts are removed automatically
+`playground, $artistic`  
+->  
+`playground, van gogh, abstract artstyle, landscape`
+
+### Mixing parts and using negative
+pos: `$3artistic, man, $1(artistic)`  
+neg: `3D, $cinematic`  
+->  
+pos: `landscape, man, van gogh`  
+neg: `3D, colorful, cute`
