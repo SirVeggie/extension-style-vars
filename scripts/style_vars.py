@@ -1,27 +1,42 @@
 import logging
 import re
 
-import gradio as gr
+# import gradio as gr
 from gradio.components import Component
 from modules import shared, script_callbacks, scripts
 from modules.processing import StableDiffusionProcessing, StableDiffusionProcessingTxt2Img
 
+
+# variables
 logger = logging.getLogger("style_vars")
 logger.setLevel(logging.INFO)
 
 extn_name = "Style Variables"
 extn_id = "style_vars"
+extn_enabled = extn_id + "_enabled"
 
 var_char = "$"
 
+
 # regexes
 re_prompt = re.compile(r",? *\{prompt\} *,? *", re.I)
+
 
 # helper functions
 def build_var(name: str):
     if " " in name:
         return f"{var_char}({name})"
     return f"{var_char}{name}"
+
+def on_ui_settings():
+    section = (extn_id, extn_name)
+    shared.opts.add_option(extn_enabled, shared.OptionInfo(True, f"Enable extension", section=section))
+
+
+# register callbacks
+script_callbacks.on_ui_settings(on_ui_settings)
+# script_callbacks.on_infotext_pasted(infotext_pasted_cb)
+
 
 class StyleVars(scripts.Script):
     is_txt2img: bool = False
@@ -34,25 +49,24 @@ class StyleVars(scripts.Script):
     def show(self, is_img2img: bool):
         return scripts.AlwaysVisible
 
-    def ui(self, is_img2img: bool) -> list[Component]:
-        with gr.Accordion(label=extn_name, open=False):
-            with gr.Row(elem_id=f"{extn_id}_row"):
-                enabled = gr.Checkbox(
-                    label="Enabled",
-                    value=True,
-                    description="Enable prompt processing",
-                    elem_id=f"{extn_id}_enabled",
-                    scale=1,
-                )
-        return [enabled]
+    # def ui(self, is_img2img: bool) -> list[Component]:
+    #     with gr.Accordion(label=extn_name, open=False):
+    #         with gr.Row(elem_id=f"{extn_id}_row"):
+    #             enabled = gr.Checkbox(
+    #                 label="Enabled",
+    #                 value=True,
+    #                 description="Enable prompt processing",
+    #                 elem_id=f"{extn_id}_enabled",
+    #                 scale=1,
+    #             )
+    #     return [enabled]
 
     def process(
         self,
         p: StableDiffusionProcessing,
-        enabled: bool,
         *args,
     ):
-        if enabled is not True:
+        if getattr(shared.opts, extn_enabled) is not True:
             return
         style_names: list[str] = shared.prompt_styles.styles.keys()
 
@@ -118,7 +132,3 @@ class StyleVars(scripts.Script):
 
 #     if TS_NEGATIVE in params:
 #         params["Negative prompt"] = params.get(TS_NEGATIVE, params["Negative prompt"])
-
-
-# register callbacks
-# script_callbacks.on_infotext_pasted(infotext_pasted_cb)
