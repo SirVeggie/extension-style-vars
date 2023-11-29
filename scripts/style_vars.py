@@ -8,12 +8,12 @@ from modules.processing import StableDiffusionProcessing, StableDiffusionProcess
 
 
 # variables
-logger = logging.getLogger("style_vars")
-logger.setLevel(logging.INFO)
-
 extn_name = "Style Variables"
 extn_id = "style_vars"
 extn_enabled = extn_id + "_enabled"
+
+logger = logging.getLogger(extn_id)
+logger.setLevel(logging.INFO)
 
 var_char = "$"
 
@@ -97,7 +97,7 @@ class StyleVars(scripts.Script):
         is_t2i = isinstance(p, StableDiffusionProcessingTxt2Img)
         hr_enabled = p.enable_hr if is_t2i else False
 
-        logger.info(f"{extn_name} processing...")
+        # logger.info(f"{extn_name} processing...")
 
         batch_size = p.batch_size
         for b_idx in range(p.n_iter):
@@ -123,7 +123,7 @@ class StyleVars(scripts.Script):
                     if s_hr_neg_prompt != s_neg_prompt:
                         logger.debug(f"[B{b_idx:02d}][I{s_offs:02d}] HR neg prompt: {s_hr_neg_prompt}")
 
-        logger.info(f"{extn_name} processing done.")
+        # logger.info(f"{extn_name} processing done.")
 
 
 # def infotext_pasted_cb(prompt: str, params: dict[str, str]):
