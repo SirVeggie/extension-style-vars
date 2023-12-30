@@ -69,6 +69,7 @@ class StyleVars(scripts.Script):
         if getattr(shared.opts, extn_enabled) is not True:
             return
         style_names: list[str] = shared.prompt_styles.styles.keys()
+        style_names = sorted(style_names, key=len, reverse=True)
 
         def rewrite_prompt(prompt: str, neg: bool):
             for name in style_names:
