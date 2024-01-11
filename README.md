@@ -18,6 +18,31 @@ which is not possible with the native use of styles.
 You can have any number of parts by having multiple `{prompt}` in the style and using `$2`, `$3`, etc...  
 `$style` will be replaced by the negative part of the style when used in the negative prompt
 
+## Extra features (new)
+
+All extra features can be toggled individually in settings, syntax based features are off by default to prevent conflict with other extensions.
+
+### Original prompt save and load
+Saves the original prompt into parameters to preserve style variables, random and hires prompting syntax when loading prompt data.
+
+### Prompt randomization
+Basic prompt randomization `{one|two|three}` chooses one of the choices randomly (basic version of dynamic prompts)
+
+Unlike dynamic prompts, this can be nested with itself or **even with other syntax** like prompt editing `[one|two]`
+
+### Hires prompting
+Modify hires prompt directly from main prompt with `{lowres prompt:hires prompt}`
+
+Hires prompting can also be nested with most prompting syntax.
+
+This allows incrementally changing prompt for hires without using the hires prompt box (no need to copy paste entire prompt just to change something in hires)
+
+### Remove line breaks and extra whitespace
+Removes unnecessary whitespace like duplicate spaces, and replaces line breaks with commas. (Does not create duplicate commas if there is already a comma before or after a line break)
+
+### Never load hires prompt (disabled by default)
+Prevents loading hires prompt into the hires prompt box when loading prompt from generation data. Prevents an issue where hires prompt is added to parameters on accident by the webui, or the webui adds hires prompt parameter when using the above hires prompting syntax.
+
 ## Examples
 
 <details>
@@ -48,3 +73,14 @@ neg: `3D, $cinematic`
 ->  
 pos: `landscape, man, van gogh`  
 neg: `3D, colorful, cute`
+
+### Create more 3D-like anime images
+Create a 3d base image, then use flat anime styling in hires
+
+pos: `cute girl, {realistic, 3d:anime style, flat digital art}`  
+neg: `worst quality, abstract, {:3d, realistic}`  
+->  
+pos: `cute girl, realistic, 3d`  
+neg: `worst quality, abstract, `  
+hires pos: `cute girl, anime style, flat digital art`  
+hires neg: `worst quality, abstract, 3d, realistic`
