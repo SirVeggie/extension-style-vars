@@ -33,6 +33,11 @@ re_prompt = re.compile(r",? *\{prompt\} *,? *", re.I)
 
 
 # helper functions
+def check_enabled():
+    return getattr(shared.opts, extn_enabled) is True
+def check_feature(name: str):
+    return check_enabled() and getattr(shared.opts, name) is True
+
 def build_var(name: str):
     if " " in name:
         return f"{var_char}({name})"
@@ -82,13 +87,13 @@ def decode(text: str, hires: bool, seed: int):
                 print("Warning: multiple splits in hr mode")
                 return text
             
-            if mode == "hr" and getattr(shared.opts, extn_hires) is True:
+            if mode == "hr" and check_feature(extn_hires):
                 part1 = text[start+1:splits[0]]
                 part2 = text[splits[0]+1:end]
                 part = part2 if hires else part1
                 text = text[:start] + part + text[end+1:]
                 
-            elif mode == "random" and getattr(shared.opts, extn_random) is True:
+            elif mode == "random" and check_feature(extn_random):
                 parts = []
                 print(text[start+1:end])
                 if len(splits) == 0:
@@ -127,10 +132,10 @@ def on_ui_settings():
     shared.opts.add_option(extn_hires_prompt_disabled, shared.OptionInfo(False, "Never load hires prompt from generation info", section=section))
 
 def on_infotext_pasted(prompt: str, params: dict[str, str]):
-    if getattr(shared.opts, extn_hires_prompt_disabled) is True:
+    if check_feature(extn_hires_prompt_disabled) is True:
         params.pop("Hires prompt");
         params.pop("Hires negative prompt");
-    if getattr(shared.opts, extn_info) is not True:
+    if not check_feature(extn_info):
         return
     if TS_PROMPT in params:
         params["Prompt"] = params.get(TS_PROMPT, params["Prompt"])
@@ -169,13 +174,13 @@ class StyleVars(scripts.Script):
         p: StableDiffusionProcessing,
         *args,
     ):
-        if getattr(shared.opts, extn_enabled) is not True:
+        if not check_enabled():
             return
         style_names: list[str] = shared.prompt_styles.styles.keys()
         style_names = sorted(style_names, key=len, reverse=True)
 
         def rewrite_prompt(prompt: str, neg: bool, hires: bool, seed: int):
-            if getattr(shared.opts, extn_linebreaks) is True:
+            if check_feature(extn_linebreaks):
                 prompt = re.sub(r"[\s,]*[\n\r]+[\s,]*", ", ", prompt)
                 prompt = re.sub(r"\s+", " ", prompt)
             prompt = decode(prompt, hires, seed)
@@ -208,7 +213,7 @@ class StyleVars(scripts.Script):
 
         # logger.info(f"{extn_name} processing...")
         
-        if getattr(shared.opts, extn_info) is True:
+        if check_feature(extn_info):
             orig_pos_prompt = deepcopy(p.all_prompts[0])
             orig_neg_prompt = deepcopy(p.all_negative_prompts[0])
         else:
@@ -239,7 +244,7 @@ class StyleVars(scripts.Script):
                     if s_hr_neg_prompt != s_neg_prompt:
                         logger.debug(f"[B{b_idx:02d}][I{s_offs:02d}] HR neg prompt: {s_hr_neg_prompt}")
 
-        if getattr(shared.opts, extn_info) is True:
+        if check_feature(extn_info):
             p.extra_generation_params.setdefault(TS_PROMPT, orig_pos_prompt)
             p.extra_generation_params.setdefault(TS_NEG, orig_neg_prompt)
         # logger.info(f"{extn_name} processing done.")
