@@ -37,11 +37,10 @@ Hires prompting can also be nested with most prompting syntax.
 
 This allows incrementally changing prompt for hires without using the hires prompt box (no need to copy paste entire prompt just to change something in hires)
 
+I recommend adding `Hires prompt` and `Hires negative prompt` to disregarded fields from pasted info text in settings -> user interface -> infotext.
+
 ### Remove line breaks and extra whitespace
 Removes unnecessary whitespace like duplicate spaces, and replaces line breaks with commas. (Does not create duplicate commas if there is already a comma before or after a line break)
-
-### Never load hires prompt (disabled by default)
-Prevents loading hires prompt into the hires prompt box when loading prompt from generation data. Prevents an issue where hires prompt is added to parameters on accident by the webui, or the webui adds hires prompt parameter when using the above hires prompting syntax.
 
 ## Examples
 

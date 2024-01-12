@@ -17,7 +17,6 @@ extn_random = extn_id + "_random"
 extn_hires = extn_id + "_hires"
 extn_linebreaks = extn_id + "_linebreaks"
 extn_info = extn_id + "_info"
-extn_hires_prompt_disabled = extn_id + "_hires_prompt_disabled"
 
 TS_PROMPT = "sv_prompt"
 TS_NEG = "sv_negative"
@@ -129,12 +128,8 @@ def on_ui_settings():
     shared.opts.add_option(extn_hires, shared.OptionInfo(False, "Enable hires prompt syntax: {normal prompt:hires prompt}", section=section))
     shared.opts.add_option(extn_linebreaks, shared.OptionInfo(True, "Remove linebreaks", section=section))
     shared.opts.add_option(extn_info, shared.OptionInfo(True, "Save and load original prompt from generation info", section=section))
-    shared.opts.add_option(extn_hires_prompt_disabled, shared.OptionInfo(False, "Never load hires prompt from generation info", section=section))
 
 def on_infotext_pasted(prompt: str, params: dict[str, str]):
-    if check_feature(extn_hires_prompt_disabled) is True:
-        params.pop("Hires prompt");
-        params.pop("Hires negative prompt");
     if not check_feature(extn_info):
         return
     if TS_PROMPT in params:
