@@ -33,6 +33,8 @@ Unlike dynamic prompts, this can be nested with itself or **even with other synt
 ### Hires prompting
 Modify hires prompt directly from main prompt with `{lowres prompt:hires prompt}`
 
+This enables the use of different LORAs in lowres and hires conveniently.
+
 Hires prompting can also be nested with most prompting syntax.
 
 This allows incrementally changing prompt for hires without using the hires prompt box (no need to copy paste entire prompt just to change something in hires)
