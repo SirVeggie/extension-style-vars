@@ -178,26 +178,35 @@ class StyleVars(scripts.Script):
             if check_feature(extn_linebreaks):
                 prompt = re.sub(r"[\s,]*[\n\r]+[\s,]*", ", ", prompt)
                 prompt = re.sub(r"\s+", " ", prompt)
-            prompt = decode(prompt, hires, seed)
             
-            for name in style_names:
-                if name not in prompt:
-                    continue
-                mode = 2 if neg else 1
+            depth = 0
+            previous_prompt = prompt
+            while depth < 5:
+                prompt = decode(prompt, hires, seed)
                 
-                # normal vars
-                text = shared.prompt_styles.styles[name][mode]
-                parts = re_prompt.split(text)
-                text = ", ".join(parts)
-                if " " not in name:
-                    prompt = prompt.replace(f"{var_char}{name}", text)
-                prompt = prompt.replace(f"{var_char}({name})", text)
-                
-                # split vars
-                for i, part in enumerate(parts):
+                for name in style_names:
+                    if name not in prompt:
+                        continue
+                    mode = 2 if neg else 1
+                    
+                    # normal vars
+                    text = shared.prompt_styles.styles[name][mode]
+                    parts = re_prompt.split(text)
+                    text = ", ".join(parts)
                     if " " not in name:
-                        prompt = prompt.replace(f"{var_char}{i+1}{name}", part)
-                    prompt = prompt.replace(f"{var_char}{i+1}({name})", part)
+                        prompt = prompt.replace(f"{var_char}{name}", text)
+                    prompt = prompt.replace(f"{var_char}({name})", text)
+                    
+                    # split vars
+                    for i, part in enumerate(parts):
+                        if " " not in name:
+                            prompt = prompt.replace(f"{var_char}{i+1}{name}", part)
+                        prompt = prompt.replace(f"{var_char}{i+1}({name})", part)
+                
+                if prompt == previous_prompt:
+                    break
+                previous_prompt = prompt
+                depth += 1
             
             # return the rewritten prompt
             return prompt
