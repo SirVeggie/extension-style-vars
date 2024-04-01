@@ -48,14 +48,14 @@ def is_opening(text, i):
 def is_closing(text, i):
     list = ['}', ')', ']', '>']
     return text[i] in list and (i == 0 or text[i-1] != '\\')
-def decode(text: str, hires: bool, seed: int):
+def decode(text: str, hires: bool, neg: bool, seed: int):
     depth = 0
     start = -1
     end = -1
     mode = "random"
     count = 0
     splits = []
-    rand = random.Random(seed)
+    rand = random.Random(seed + (1 if neg else 0))
     
     if len(text) == 0:
         return text
@@ -83,7 +83,7 @@ def decode(text: str, hires: bool, seed: int):
         
         if end != -1:
             if mode == "hr" and len(splits) > 1:
-                print("Warning: multiple splits in hr mode")
+                logger.error("Warning: multiple splits in hr mode")
                 return text
             
             if mode == "hr" and check_feature(extn_hires):
@@ -94,7 +94,6 @@ def decode(text: str, hires: bool, seed: int):
                 
             elif mode == "random" and check_feature(extn_random):
                 parts = []
-                print(text[start+1:end])
                 if len(splits) == 0:
                     parts.append(text[start+1:end])
                 else:
@@ -182,7 +181,7 @@ class StyleVars(scripts.Script):
             depth = 0
             previous_prompt = prompt
             while depth < 5:
-                prompt = decode(prompt, hires, seed)
+                prompt = decode(prompt, hires, neg, seed)
                 
                 for name in style_names:
                     if name not in prompt:
@@ -214,8 +213,6 @@ class StyleVars(scripts.Script):
         # check if we're doing t2i with HR
         is_t2i = isinstance(p, StableDiffusionProcessingTxt2Img)
         hr_enabled = p.enable_hr if is_t2i else False
-
-        # logger.info(f"{extn_name} processing...")
         
         if check_feature(extn_info):
             orig_pos_prompt = deepcopy(p.all_prompts[0])
@@ -251,4 +248,3 @@ class StyleVars(scripts.Script):
         if check_feature(extn_info):
             p.extra_generation_params.setdefault(TS_PROMPT, orig_pos_prompt)
             p.extra_generation_params.setdefault(TS_NEG, orig_neg_prompt)
-        # logger.info(f"{extn_name} processing done.")
