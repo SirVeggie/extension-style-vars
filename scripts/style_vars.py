@@ -29,6 +29,7 @@ var_char = "$"
 
 # regexes
 re_prompt = re.compile(r",? *\{prompt\} *,? *", re.I)
+re_group = re.compile(r"^_\d+_$")
 
 
 # helper functions
@@ -53,7 +54,6 @@ def decode(text: str, hires: bool, neg: bool, seed: int):
     start = -1
     end = -1
     mode = "random"
-    count = 0
     splits = []
     rand = random.Random(seed + (1 if neg else 0))
     
@@ -104,8 +104,11 @@ def decode(text: str, hires: bool, neg: bool, seed: int):
                             parts.append(text[splits[k-1]+1:splits[k]])
                     parts.append(text[splits[-1]+1:end])
                 
-                count += 1
-                part = rand.choice(parts)
+                custom_seed = parts.pop(0) if re_group.match(parts[0]) else None
+                if custom_seed:
+                    part = random.Random(seed + custom_seed).choice(parts)
+                else:
+                    part = rand.choice(parts)
                 text = text[:start] + part + text[end+1:]
             
             else:

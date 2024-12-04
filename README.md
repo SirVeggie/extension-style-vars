@@ -26,9 +26,12 @@ All extra features can be toggled individually in settings, syntax based feature
 Saves the original prompt into parameters to preserve style variables, random and hires prompting syntax when loading prompt data.
 
 ### Prompt randomization
-Basic prompt randomization `{one|two|three}` chooses one of the choices randomly (basic version of dynamic prompts)
+Basic prompt randomization `{one|two|three}` chooses one of the choices randomly (basic version of dynamic prompts).
 
-Unlike dynamic prompts, this can be nested with itself or **even with other syntax** like prompt editing `[one|two]`
+Unlike dynamic prompts, this can be nested with itself or **even with other syntax** like prompt editing `[one|two]`.
+
+You can 'group' or 'sync' different randomizations together, causing them to pick the same option. This way you can randomize something that needs to be separated in different parts of the prompt, but still linked together. To sync two randomizations, the first item must be number surrounded by an underscore, like `_69_`. The linked groups must have the same amount of options. This also works across different prompt boxes (positive/negative/adetailer) as long as each part of the generation uses the same seed.  
+For example `a {_1_|man|woman} wearing a {_1_|suit|dress}`.
 
 ### Hires prompting
 Modify hires prompt directly from main prompt with `{lowres prompt:hires prompt}`
