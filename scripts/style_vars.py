@@ -106,7 +106,7 @@ def decode(text: str, hires: bool, neg: bool, seed: int):
                 
                 custom_seed = parts.pop(0) if re_group.match(parts[0]) else None
                 if custom_seed:
-                    part = random.Random(seed + custom_seed).choice(parts)
+                    part = random.Random(str(seed) + custom_seed).choice(parts)
                 else:
                     part = rand.choice(parts)
                 text = text[:start] + part + text[end+1:]
